@@ -1,41 +1,33 @@
 const url = 'https://tinkr.tech/sdb/keir_todo/keir_todo/';
+const input = document.getElementById('input');
+const addButton = document.getElementById('add');
+const todoList = document.getElementById('todo-list');
 
-async function showTodos() {
-  const res = await fetch(url);
-  const data = await res.json();
-  const list = document.querySelector('#todo-list');
-  list.innerHTML = "";
 
-  data.forEach(todo => {
-    const li = document.createElement('li');
-    li.textContent = todo.text;
-    li.onclick = () => li.classList.toggle('completed');
+function addItem() {
+    if (input.value === "") return;
 
-    const del = document.createElement('button');
-    del.textContent = "Delete";
-    del.onclick = async (e) => {
-      e.stopPropagation();
-      await fetch(url + todo.id, { method: "DELETE" });
-      li.remove();
+    const newTodo = {
+        text: input.value,
+        id: Date.now().toString()
     };
 
-    li.appendChild(del);
-    list.appendChild(li);
-  });
+    fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTodo)
+    }).then(() => {
+        input.value = "";
+        showTodos();
+    });
 }
 
-document.querySelector('#add-btn').onclick = async () => {
-  const input = document.querySelector('#todo-input');
-  if (input.value == "") return;
+addButton.onclick = addItem;
 
-  await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text: input.value })
-  });
-
-  input.value = "";
-  showTodos();
+input.onkeydown = (enter) => {
+    if (enter.key === "Enter") {
+        addItem();
+    }
 };
 
 showTodos();
