@@ -32,3 +32,8 @@ ul {
 body {
     background-color: hsl(0, 0%, 50%);
 }
+
+li {
+    display: flex;
+    gap: 10px;
+}
